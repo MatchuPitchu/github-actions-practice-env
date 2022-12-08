@@ -4,9 +4,18 @@ on:
     branches:
       - main
       - dev
+# defining env variable on workflow level -> they will be available in all jobs
+env:
+  # use your defined variable name of process.env.NAME as key and set the value
+  MONGODB_DB_NAME: gha-demo
 jobs:
   test:
-    environment: testing
+    # defining env variable on job level
+    env:
+      MONGODB_CLUSTER_ADDRESS: dummy_cluster_address
+      MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME}}
+      MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD}}
+      PORT: 3000
     runs-on: ubuntu-latest
     steps:
       - name: Get Code
@@ -19,15 +28,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run server
-        run: npm start & npx wait-on http://127.0.0.1:XYZ
-      - name: Run tests
-        run: npm test
+        # a) inject env variable into command (-> format for Linux Bash Shell used on ubuntu runner: $NAME)
+        # you could also change the default shell to Windows Powershell etc.: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsshell
+        run: npm start & npx wait-on http://127.0.0.1:$env:PORT
       - name: Output information
-        run: echo "..."
+        # b) output env variable with GitHub env object context
+        # 'env.MONGODB_USERNAME' is automatically hidden by GitHub because it's set as a secret
+        run: |
+          echo "MONGODB_USERNAME: ${{ env.MONGODB_DB_NAME }}"
+          echo "MONGODB_USERNAME: ${{ env.MONGODB_USERNAME }}"
   deploy:
     needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Output information
-        run: |        
-          echo "..."
+        run: |
+          echo "MONGODB_DB_NAME: ${{ env.MONGODB_DB_NAME }}"
