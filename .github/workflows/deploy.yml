@@ -10,7 +10,10 @@ env:
   MONGODB_DB_NAME: gha-demo
 jobs:
   test:
-    # defining env variable on job level
+    # set an environment configured in GitHub Repo -> Settings -> Environments
+    # env variables are pulled from this environment
+    environment: testing
+    # set env variable on job level
     env:
       MONGODB_CLUSTER_ADDRESS: dummy_cluster_address
       MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME}}
