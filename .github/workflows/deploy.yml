@@ -30,7 +30,7 @@ jobs:
       - name: Run server
         # a) inject env variable into command (-> format for Linux Bash Shell used on ubuntu runner: $NAME)
         # you could also change the default shell to Windows Powershell etc.: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsshell
-        run: npm start & npx wait-on http://127.0.0.1:$env:PORT
+        run: npm start & npx wait-on http://127.0.0.1:$PORT
       - name: Output information
         # b) output env variable with GitHub env object context
         # 'env.MONGODB_USERNAME' is automatically hidden by GitHub because it's set as a secret
